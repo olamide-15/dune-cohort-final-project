@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{%  block content %}
+    
+    {%  for course in courses %}
+        <p>{{course_name}} - {{course_code}}</p>
+    {{% empty %}}
+        <p> no course found.</P>
+    {% endfor %}
+
+{% endblock %}

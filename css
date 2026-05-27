@@ -1,0 +1,90 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    flex-direction: row;
+}
+
+nav{
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(8, 8, 117);
+}
+
+
+.logo img {
+  max-width: 130px;
+  height: auto;
+  display: block;
+}
+
+.navRight{
+    display: flex;
+    gap: 20px;
+}
+
+.navRight a{
+    text-decoration: none;
+    color: #fff;
+    /* border: 2px solid red; */
+    background-color: rgb(19, 19, 183);
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+main{
+    height: 82vh;
+    width: 70%;
+    background-image: url("{% static 'image/nick-morrison-FHnnjk1Yj7Y-unsplash.jpg' %}");
+}
+
+footer{
+    background-color: rgb(8, 8, 117);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+footer p{
+    color: #fff;
+}
+
+
+
+
+/* <nav>
+              
+
+         <a href="/" class="logo">
+        {% comment %} <img src="{% static 'image/logo.png' %}" alt="smartstudy Logo"> {% endcomment %}
+        </a> 
+        <div class="navRight">
+            <a href="/">Dashboard</a>
+            <a href="/students/">student</a>
+            <a href="/about/">About</a>
+            <a href="/courses/">course</a>
+        </div>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'register' %}">Register</a>
+    </nav>
+
+    <main>
+
+        {% if messages %}
+            {% for messages in messages %}
+                <div class='alert alert-{{ message.tags }}'>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content%}
+        {% endblock %} */

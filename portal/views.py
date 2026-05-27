@@ -10,6 +10,16 @@ from .models import AssignmentSubmission,Assignment, Course, Enrollment, Grade
 def home(request):
     return render(request, 'portal/home.html')
 
+def course_list(request):
+    courses = Course.objects.all()
+    context = {'courses': courses}
+    return render(request, 'portal/course_list.html', context)
+
+def course_details(request, pk):
+    course = get_object_or_404(Course, pk= pk)
+    context = {'course': course} 
+    return render(request, 'portal/course_detail.html', context)
+
 # for custom users
 
 def role_required(role):

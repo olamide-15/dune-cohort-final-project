@@ -3,12 +3,15 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('courses/', views.course_list, name= 'course_list'),
+    path('courses/<int:pk>/', views.course_detail, name='course_details'),
+    
     # path('assignment/<int:course_id>/create/',      views.create_assignment, name='create_assignment'),
 
-    path('assignment/<int:course_id>/create/',      views.assignment_create, name='assignment_create'),
-    path('assignment/<int:assignment_id>/',          views.assignment_detail, name='assignment_detail'),
-    path('assignment/<int:assignment_id>/edit/',     views.assignment_update,   name='edit_assignment'),
-    path('assignment/<int:assignment_id>/delete/',   views.delete_assignment, name='delete_assignment'),
+    path('assignment/<int:course_pk>/create/',      views.assignment_create, name='assignment_create'),
+    path('assignment/<int:assignment_pk>/',          views.assignment_detail, name='assignment_detail'),
+    path('assignment/<int:assignment_pk>/edit/',     views.assignment_update,   name='edit_assignment'),
+    path('assignment/<int:assignment_pk>/delete/',   views.delete_assignment, name='delete_assignment'),
     # path('assignment/<int:assignment_id>/submit/',   views.submit_assignment, name='submit_assignment'),
     # path('assignment/<int:assignment_id>/submissions/', views.view_submissions, name='view_submissions'),
 

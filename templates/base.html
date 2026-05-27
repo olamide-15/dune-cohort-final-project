@@ -1,4 +1,6 @@
 {% load static %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,20 +12,45 @@
 </head>
 <body>
     <script  src="{% static 'js/main.js' %}"></script>
-    <nav>
-              
 
-         <a href="/" class="logo">
-        <img src="{% static 'image/logo.png' %}" alt="smartstudy Logo">
-        </a> 
-        {% comment %} <div class="navRight">
-            <a href="/">Dashboard</a>
-            <a href="/students/">student</a>
-            <a href="/about/">About</a>
-            <a href="/courses/">course</a>
+    <nav>
+        <div>
+            <a href="/" class="logo"><img src="{% static 'image/logo.png' %}" alt="smartstudy Logo"> </a> 
+            <h2>SmartStudy</h2>
+            <h1>Student Portal</h1>
         </div>
+        <div class="navRight">
+            <a href="/">Dashboard</a>
+            <a href="/courses/">Course</a>
+        </div>
+        
+
+
+        <div class="nav-links">
+        <a href="/">Home</a>
+        <!-- Using url tag is safer than hardcoding /products -->
+        <a href="">Students</a>  
+        <a href="/about">About</a>
+
+        {% if CustomUser.is_student %}
+        <!-- show only to logged-in users -->
+            <a href="{% url 'student_dashboard' %}">Dashboard</a>
+            <span style="color: white; padding: 8px 16px;">Hello, {{ request.user.username }}</span>
+
+            <!-- Corrected logout: Must use POST for Django 5.0+ -->
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <!-- Shown only to loggged-out visitors -->
+            <a href="">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+        </div>
+        
         <a href="{% url 'login' %}">Login</a>
-        <a href="{% url 'register' %}">Register</a> {% endcomment %}
+        <a href="{% url 'register' %}">Register</a>
     </nav>
 
     <main>
@@ -38,11 +65,14 @@
 
         {% block content%}
         {% endblock %}
+    <footer>
+            <p>copyright &copy; smartstudy</p>
+        </footer>
     </main>
     
     
-    <footer>
-        <p>copyright &copy; smartstudy</p>
-    </footer>
+    
 </body>
+
+
 </html>
