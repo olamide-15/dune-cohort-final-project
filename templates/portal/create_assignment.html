@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} UPDATE ASSIGNMENT {% endtitle %}
+
+{% block content %}
+<form method='POST' action=''>
+    {% csrf_token %}
+
+    {{ form.as_p }}
+    <button type='submit'> SUBMIT </button>
+</form>
+
+{% if form.errors %}
+    {% comment %} <ul>
+        {% for field, errors in form.errors. %}
+            {% for error in errors %}
+                <li>{{}} {% endcomment %}
+                {% endfor %}
+            {% endfor %}
+    </ul>    
+{% endif %}
+{% endblock %}

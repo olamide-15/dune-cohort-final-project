@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - smartstudy {% endblock %}
+
+{% block content %}
+<div >
+    <section>
+        <h2>User Dashboard</h2>
+        <div>
+            <p><strong>username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Account Type:</strong>
+                {% if user.is_staff %}
+                    <span class="badge">Staff / Administrator</span>
+                {% else %}
+                    <span class="badge">Customer</span></p>
+                {% endif %}
+            </p>
+        </div>
+
+        <div>
+            <a href="{% url 'student_list' %}" >View student</a>
+        </div>
+    </section>
+</div>
+{% endblock %}
