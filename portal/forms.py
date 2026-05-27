@@ -30,4 +30,9 @@ class AssignmentForm(forms.ModelForm):
         if due_date < timezone.now().date():
             raise forms.ValidationError('Due date cannot be in the past')
         
+class EnrollmentForm(forms.ModelForm):
+    class Meta:
+        model = Enrollment
+        fields = ['date']
+        
         

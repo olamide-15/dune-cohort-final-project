@@ -3,12 +3,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from functools import wraps
-from .forms import AssignmentForm
-from .models import AssignmentSubmission,Assignment, Course, Enrollment
+from .forms import AssignmentForm, GradeForm, EnrollmentForm
+from .models import AssignmentSubmission,Assignment, Course, Enrollment, Grade
 
 # Create your views here.
 def home(request):
-    return render(request, 'portal/home.html',)
+    return render(request, 'portal/home.html')
+
+# for custom users
 
 def role_required(role):
     def decorator(view_func):
@@ -21,53 +23,55 @@ def role_required(role):
         return wrapped
     return decorator
 
-# @role_required('staff')
-# def create_course(request):
-#     if request.method == 'POST':
-#         title   = request.POST.get('title')
-#         code    = request.POST.get('code')
-#         Course.objects.create(
-#             title=title, code=code, teacher=request.user
-#         )
-#         messages.success(request, f'Course "{title}" created.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/create_course.html')
+#  course crud
+
+@role_required('staff')
+def create_course(request):
+    if request.method == 'POST':
+        title   = request.POST.get('title')
+        code    = request.POST.get('code')
+        Course.objects.create(
+            title=title, code=code, teacher=request.user
+        )
+        messages.success(request, f'Course "{title}" created.')
+        return redirect('staff_dashboard')
+    return render(request, 'portal/create_course.html')
 
 
-# @role_required('staff')
-# def course_detail(request, course_id):
-#     course      = get_object_or_404(Course, id=course_id)
-#     enrollments = Enrollment.objects.filter(
-#         course=course
-#     ).select_related('student').prefetch_related('grades')
-#     return render(request, 'portal/course_detail.html', {
-#         'course':      course,
-#         'enrollments': enrollments,
-#     })
+@role_required('staff')
+def course_detail(request, course_id):
+    course      = get_object_or_404(Course, id=course_id)
+    enrollments = Enrollment.objects.filter(
+        course=course
+    ).select_related('student').prefetch_related('grades')
+    return render(request, 'portal/course_detail.html', {
+        'course':      course,
+        'enrollments': enrollments,
+    })
 
 
-# @role_required('staff')
-# def edit_course(request, course_id):
-#     course = get_object_or_404(Course, id=course_id, teacher=request.user)
-#     if request.method == 'POST':
-#         course.title = request.POST.get('title')
-#         course.code  = request.POST.get('code')
-#         course.save()
-#         messages.success(request, 'Course updated.')
-#         return redirect('course_detail', course_id=course.id)
-#     return render(request, 'portal/edit_course.html', {'course': course})
+@role_required('staff')
+def edit_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id, teacher=request.user)
+    if request.method == 'POST':
+        course.title = request.POST.get('title')
+        course.code  = request.POST.get('code')
+        course.save()
+        messages.success(request, 'Course updated.')
+        return redirect('course_detail', course_id=course.id)
+    return render(request, 'portal/edit_course.html', {'course': course})
 
 
-# @role_required('staff')
-# def delete_course(request, course_id):
-#     course = get_object_or_404(Course, id=course_id, teacher=request.user)
-#     if request.method == 'POST':
-#         course.delete()
-#         messages.success(request, 'Course deleted.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/confirm_delete.html', {'object': course})
+@role_required('staff')
+def delete_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id, teacher=request.user)
+    if request.method == 'POST':
+        course.delete()
+        messages.success(request, 'Course deleted.')
+        return redirect('staff_dashboard')
+    return render(request, 'portal/confirm_delete.html', {'object': course})
 
-
+#  Assignment Crud
 
 def assignment_create(request):
     if request.method == 'POST':
@@ -119,7 +123,61 @@ def delete_assignment(request, assignment_id):
     return render(request, 'portal/confirm_delete.html', {'object': assignment})
 
 
+# Grade 
 
+@role_required('staff')
+def add_grade(request, enrollment_id):
+    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+    form       = GradeForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        grade            = form.save(commit=False)
+        grade.enrollment = enrollment
+        grade.save()
+        messages.success(request, 'Grade recorded.')
+        return redirect('course_detail', course_id=enrollment.course.id)
+    return render(request, 'portal/add_grade.html', {
+        'form': form, 'enrollment': enrollment
+    })
+
+
+@role_required('staff')
+def edit_grade(request, grade_id):
+    grade = get_object_or_404(Grade, id=grade_id)
+    form  = GradeForm(request.POST or None, instance=grade)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Grade updated.')
+        return redirect('course_detail', course_id=grade.enrollment.course.id)
+    return render(request, 'portal/edit_grade.html', {
+        'form': form, 'grade': grade
+    })
+
+@role_required('staff')
+def enroll_student(request):
+    form = EnrollmentForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Student enrolled successfully.')
+        return redirect('enrollment_list')
+    return render(request, 'portal/enroll_student.html', {'form': form})
+
+
+@role_required('staff')
+def enrollment_list(request):
+    enrollments = Enrollment.objects.all().select_related('student', 'course')
+    return render(request, 'portal/enrollment_list.html', {
+        'enrollments': enrollments
+    })
+
+
+@role_required('staff')
+def remove_enrollment(request, enrollment_id):
+    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+    if request.method == 'POST':
+        enrollment.delete()
+        messages.success(request, 'Enrollment removed.')
+        return redirect('enrollment_list')
+    return render(request, 'portal/confirm_delete.html', {'object': enrollment})
 
 
 # from django.shortcuts import render, redirect, get_object_or_404
