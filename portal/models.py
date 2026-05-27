@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICE)
     phone = models.CharField(max_length=20, blank=True)
-    # image = models.ImageField(upload_to='students/', blank=True, null=True)
+    image = models.ImageField(upload_to='students/', blank=True, null=True)
     class_name = models.CharField(max_length=20, blank=True)
     children = models.ManyToManyField('self', blank=True,)
 
