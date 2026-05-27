@@ -60,7 +60,7 @@ footer p{
 
 
 
-/* <nav>
+<nav>
               
 
          <a href="/" class="logo">
@@ -87,4 +87,4 @@ footer p{
         {% endif %}
 
         {% block content%}
-        {% endblock %} */
+        {% endblock %}

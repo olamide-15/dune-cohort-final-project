@@ -14,43 +14,66 @@
     <script  src="{% static 'js/main.js' %}"></script>
 
     <nav>
-        <div>
-            <a href="/" class="logo"><img src="{% static 'image/logo.png' %}" alt="smartstudy Logo"> </a> 
+
+        {% comment %} <a href="/" class="logo"><img src="{% static 'image/logo.png' %}" alt="smartstudy Logo"> </a>  {% endcomment %}
             <h2>SmartStudy</h2>
-            <h1>Student Portal</h1>
-        </div>
-        <div class="navRight">
-            <a href="/">Dashboard</a>
-            <a href="/courses/">Course</a>
-        </div>
+            <h4>Student Portal</h4>
+        {% comment %} <div class='topNav'>
+            
+
+            <div class="navRight">
+                <a href="dashboard/">Dashboard</a>
+                <a href="/courses/">Course</a>
+            </div>
+        </div> {% endcomment %}
+       
         
 
 
         <div class="nav-links">
-        <a href="/">Home</a>
-        <!-- Using url tag is safer than hardcoding /products -->
-        <a href="">Students</a>  
-        <a href="/about">About</a>
+            <a href="/">Home</a>
+            <!-- Using url tag is safer than hardcoding /products -->
+            {% comment %} <a href="">Students</a>   {% endcomment %}
 
-        {% if CustomUser.is_student %}
-        <!-- show only to logged-in users -->
-            <a href="{% url 'student_dashboard' %}">Dashboard</a>
-            <span style="color: white; padding: 8px 16px;">Hello, {{ request.user.username }}</span>
+            {% if request.user.is_authenticated and user.is_student %}
+            <!-- show only to logged-in users -->
+                <a href="{% url 'student_dashboard' %}">Dashboard</a>
+                <span style="color: white; padding: 8px 16px;">Hello, {{ request.user.username }}</span>
 
-            <!-- Corrected logout: Must use POST for Django 5.0+ -->
-            <form action="{% url 'logout' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-            </form>
-        {% else %}
-            <!-- Shown only to loggged-out visitors -->
-            <a href="">Login</a>
-            <a href="{% url 'register' %}">Register</a>
-        {% endif %}
+                <!-- Corrected logout: Must use POST for Django 5.0+ -->
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+                </form>
+            {% elif request.user.is_authenticated and user.is_staff %}    
+                <a href="{% url 'staff_dashboard' %}">Dashboard</a>
+                <span style="color: white; padding: 8px 16px;">Hello, {{ request.user.username }}</span>
+
+
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link" style="padding:0; margin:0; border:none; background:none;">
+                        Logout
+                    </button>
+                </form>
+
+                <!-- Corrected logout: Must use POST for Django 5.0+ -->
+                {% comment %} <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+                </form> {% endcomment %}
+            {% else %}
+                <!-- Shown only to loggged-out visitors -->
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+
+
+            {% comment %} <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a> {% endcomment %}
         </div>
         
-        <a href="{% url 'login' %}">Login</a>
-        <a href="{% url 'register' %}">Register</a>
+        
     </nav>
 
     <main>
