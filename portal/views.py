@@ -9,9 +9,17 @@ import json
 from django.http import JsonResponse
 from .models import CustomUser
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import UserSerializer, CourseSerializer
+from rest_framework import status
+from rest_framework.decorators import api_view
+
 
 
 # Create your views here.
+
+
 def home(request):
     return render(request, 'portal/home.html')
 
@@ -20,8 +28,11 @@ def course_list(request):
     context = {'courses': courses}
     return render(request, 'portal/course_list.html', context)
 
+def course_list_json(request):
+    courses = Course.objects.all()
+    data =[{'id': c.id, 'title': c.title, 'code': c.code, 'teacher': c.teacher.get_full_name()if c.teacher else None} for c in courses]
 
-
+    return JsonResponse(data, safe=False)
 
 def course_details(request, pk):
     course = get_object_or_404(Course, pk= pk)
@@ -198,289 +209,81 @@ def remove_enrollment(request, enrollment_id):
     return render(request, 'portal/confirm_delete.html', {'object': enrollment})
 
 
-# from django.shortcuts import render, redirect, get_object_or_404
-# from django.contrib import messages
-# from django.contrib.auth.decorators import login_required
-# from django.utils import timezone
-# from functools import wraps
-# from .models import (
-#     CustomUser, Course, Enrollment,
-#     Grade, Assignment, AssignmentSubmission, Announcement
-# )
-# from .forms import (
-#     EditUserForm, GradeForm, AssignmentForm,
-#     AnnouncementForm, EnrollmentForm
-# )
+#  API VIEWS
+
+# @api_view(['GET'])
+# def student_list(request):
+#     students = CustomUser.objects.filter(role='is_student')
+#     serializer = UserSerializer(students, many=True)
+#     return Response(serializer.data)
+
+# @api_view(['GET'])
+# def staff_list(request):
+#     staffs = CustomUser.objects.filter(role='is_staff_member')
+#     serializer = UserSerializer(staffs, many=True)
+#     return Response(serializer.data) 
 
 
-# # ── Decorator ──────────────────────────────────────────────────────────────────
-# def role_required(role):
-#     def decorator(view_func):
-#         @wraps(view_func)
-#         @login_required(login_url='login')
-#         def wrapped(request, *args, **kwargs):
-#             if request.user.role != role:
-#                 return redirect('dashboard')
-#             return view_func(request, *args, **kwargs)
-#         return wrapped
-#     return decorator
+class StudentListAPIView(APIView):
+    def get(self, request):        
+        students = CustomUser.objects.filter(role='student')
+        serializer =UserSerializer(students, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = UserSerializer(data= request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class StudentDetailAPIView(APIView):
+    def get_object(self, pk):
+        try:
+            return CustomUser.objects.get(pk=pk,role='student')
+        except CustomUser.DoesNotExist:
+            return None
+        
+    def get(self, request, pk):
+        student = self.get_object(pk)
+        if student is None:
+            return Response({'error':'Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(student)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+            student = self.get_object(pk)
+            if student is None:
+                return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            serializer = UserSerializer(student, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        student = self.get_object(pk)
+        if student is None:
+            return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+        student.delete()
+        # 204 No Content — success but no data to return
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 
+# class StudentListAPIView(APIView):
+#     def get(self, request):
+#         # Step 1 - check if ANY users exist
+#         all_users = CustomUser.objects.all()
+#         print("Total users:", all_users.count())
 
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# # COURSE
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#         # Step 2 - check what roles are stored
+#         roles = CustomUser.objects.values_list('role', flat=True).distinct()
+#         print("Roles in DB:", list(roles))
 
-# @role_required('staff')
-# def create_course(request):
-#     if request.method == 'POST':
-#         title   = request.POST.get('title')
-#         code    = request.POST.get('code')
-#         Course.objects.create(
-#             title=title, code=code, teacher=request.user
-#         )
-#         messages.success(request, f'Course "{title}" created.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/create_course.html')
+#         # Step 3 - filter based on actual role value
+#         students = CustomUser.objects.filter(role='is_student')
+#         print("Students found:", students.count())
 
-
-# @role_required('staff')
-# def course_detail(request, course_id):
-#     course      = get_object_or_404(Course, id=course_id)
-#     enrollments = Enrollment.objects.filter(
-#         course=course
-#     ).select_related('student').prefetch_related('grades')
-#     return render(request, 'portal/course_detail.html', {
-#         'course':      course,
-#         'enrollments': enrollments,
-#     })
-
-
-# @role_required('staff')
-# def edit_course(request, course_id):
-#     course = get_object_or_404(Course, id=course_id, teacher=request.user)
-#     if request.method == 'POST':
-#         course.title = request.POST.get('title')
-#         course.code  = request.POST.get('code')
-#         course.save()
-#         messages.success(request, 'Course updated.')
-#         return redirect('course_detail', course_id=course.id)
-#     return render(request, 'portal/edit_course.html', {'course': course})
-
-
-# @role_required('staff')
-# def delete_course(request, course_id):
-#     course = get_object_or_404(Course, id=course_id, teacher=request.user)
-#     if request.method == 'POST':
-#         course.delete()
-#         messages.success(request, 'Course deleted.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/confirm_delete.html', {'object': course})
-
-
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# # ENROLLMENT
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# @role_required('staff')
-# def enroll_student(request):
-#     form = EnrollmentForm(request.POST or None)
-#     if request.method == 'POST' and form.is_valid():
-#         form.save()
-#         messages.success(request, 'Student enrolled successfully.')
-#         return redirect('enrollment_list')
-#     return render(request, 'portal/enroll_student.html', {'form': form})
-
-
-# @role_required('staff')
-# def enrollment_list(request):
-#     enrollments = Enrollment.objects.all().select_related('student', 'course')
-#     return render(request, 'portal/enrollment_list.html', {
-#         'enrollments': enrollments
-#     })
-
-
-# @role_required('staff')
-# def remove_enrollment(request, enrollment_id):
-#     enrollment = get_object_or_404(Enrollment, id=enrollment_id)
-#     if request.method == 'POST':
-#         enrollment.delete()
-#         messages.success(request, 'Enrollment removed.')
-#         return redirect('enrollment_list')
-#     return render(request, 'portal/confirm_delete.html', {'object': enrollment})
-
-
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# # GRADE
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# @role_required('staff')
-# def add_grade(request, enrollment_id):
-#     enrollment = get_object_or_404(Enrollment, id=enrollment_id)
-#     form       = GradeForm(request.POST or None)
-#     if request.method == 'POST' and form.is_valid():
-#         grade            = form.save(commit=False)
-#         grade.enrollment = enrollment
-#         grade.save()
-#         messages.success(request, 'Grade recorded.')
-#         return redirect('course_detail', course_id=enrollment.course.id)
-#     return render(request, 'portal/add_grade.html', {
-#         'form': form, 'enrollment': enrollment
-#     })
-
-
-# @role_required('staff')
-# def edit_grade(request, grade_id):
-#     grade = get_object_or_404(Grade, id=grade_id)
-#     form  = GradeForm(request.POST or None, instance=grade)
-#     if request.method == 'POST' and form.is_valid():
-#         form.save()
-#         messages.success(request, 'Grade updated.')
-#         return redirect('course_detail', course_id=grade.enrollment.course.id)
-#     return render(request, 'portal/edit_grade.html', {
-#         'form': form, 'grade': grade
-#     })
-
-
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# # ASSIGNMENT
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# @role_required('staff')
-# def create_assignment(request, course_id):
-#     course = get_object_or_404(Course, id=course_id, teacher=request.user)
-#     form   = AssignmentForm(request.POST or None)
-#     if request.method == 'POST' and form.is_valid():
-#         assignment        = form.save(commit=False)
-#         assignment.course = course
-#         assignment.save()
-#         messages.success(request, f'Assignment "{assignment.title}" created.')
-#         return redirect('course_detail', course_id=course.id)
-#     return render(request, 'portal/create_assignment.html', {
-#         'form': form, 'course': course
-#     })
-
-
-# @login_required(login_url='login')
-# def assignment_detail(request, assignment_id):
-#     assignment = get_object_or_404(Assignment, id=assignment_id)
-#     submission = AssignmentSubmission.objects.filter(
-#         assignment=assignment,
-#         student=request.user
-#     ).first()
-#     return render(request, 'portal/assignment_detail.html', {
-#         'assignment': assignment,
-#         'submission': submission,
-#     })
-
-
-# @role_required('staff')
-# def edit_assignment(request, assignment_id):
-#     assignment = get_object_or_404(Assignment, id=assignment_id)
-#     form       = AssignmentForm(request.POST or None, instance=assignment)
-#     if request.method == 'POST' and form.is_valid():
-#         form.save()
-#         messages.success(request, 'Assignment updated.')
-#         return redirect('course_detail', course_id=assignment.course.id)
-#     return render(request, 'portal/edit_assignment.html', {
-#         'form': form, 'assignment': assignment
-#     })
-
-
-# @role_required('staff')
-# def delete_assignment(request, assignment_id):
-#     assignment = get_object_or_404(Assignment, id=assignment_id)
-#     if request.method == 'POST':
-#         assignment.delete()
-#         messages.success(request, 'Assignment deleted.')
-#         return redirect('course_detail', course_id=assignment.course.id)
-#     return render(request, 'portal/confirm_delete.html', {'object': assignment})
-
-
-# @role_required('student')
-# def submit_assignment(request, assignment_id):
-#     assignment = get_object_or_404(Assignment, id=assignment_id)
-#     submission, created = AssignmentSubmission.objects.get_or_create(
-#         assignment=assignment,
-#         student=request.user
-#     )
-#     if not submission.submitted:
-#         submission.submitted    = True
-#         submission.submitted_at = timezone.now()
-#         submission.save()
-#         messages.success(request, f'"{assignment.title}" submitted.')
-#     else:
-#         messages.info(request, 'Already submitted.')
-#     return redirect('student_dashboard')
-
-
-# @role_required('staff')
-# def view_submissions(request, assignment_id):
-#     assignment  = get_object_or_404(Assignment, id=assignment_id)
-#     submissions = AssignmentSubmission.objects.filter(
-#         assignment=assignment
-#     ).select_related('student')
-#     return render(request, 'portal/view_submissions.html', {
-#         'assignment':  assignment,
-#         'submitted':   submissions.filter(submitted=True),
-#         'pending':     submissions.filter(submitted=False),
-#     })
-
-
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# # ANNOUNCEMENT
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# @role_required('staff')
-# def make_announcement(request):
-#     form = AnnouncementForm(request.POST or None)
-#     if request.method == 'POST' and form.is_valid():
-#         announcement            = form.save(commit=False)
-#         announcement.created_by = request.user
-#         announcement.save()
-#         messages.success(request, 'Announcement posted.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/make_announcement.html', {'form': form})
-
-
-# @role_required('staff')
-# def edit_announcement(request, announcement_id):
-#     announcement = get_object_or_404(Announcement, id=announcement_id)
-#     form         = AnnouncementForm(request.POST or None, instance=announcement)
-#     if request.method == 'POST' and form.is_valid():
-#         form.save()
-#         messages.success(request, 'Announcement updated.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/edit_announcement.html', {
-#         'form': form, 'announcement': announcement
-#     })
-
-
-# @role_required('staff')
-# def delete_announcement(request, announcement_id):
-#     announcement = get_object_or_404(Announcement, id=announcement_id)
-#     if request.method == 'POST':
-#         announcement.delete()
-#         messages.success(request, 'Announcement deleted.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/confirm_delete.html', {'object': announcement})
-
-
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# # USER MANAGEMENT
-# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# @role_required('staff')
-# def edit_user(request, user_id):
-#     user = get_object_or_404(CustomUser, id=user_id)
-#     form = EditUserForm(
-#         request.POST  or None,
-#         request.FILES or None,
-#         instance=user
-#     )
-#     if request.method == 'POST' and form.is_valid():
-#         form.save()
-#         messages.success(request, f'{user.get_full_name()} updated.')
-#         return redirect('staff_dashboard')
-#     return render(request, 'portal/edit_user.html', {
-#         'form': form, 'user': user
-#     })
+#         serializer = UserSerializer(students, many=True)
+#         return Response(serializer.data)

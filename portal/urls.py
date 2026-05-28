@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import StudentDetailAPIView, StudentListAPIView
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -12,6 +13,10 @@ urlpatterns = [
     path('assignment/<int:assignment_pk>/',          views.assignment_detail, name='assignment_detail'),
     path('assignment/<int:assignment_pk>/edit/',     views.assignment_update,   name='edit_assignment'),
     path('assignment/<int:assignment_pk>/delete/',   views.delete_assignment, name='delete_assignment'),
+
+    path('api/students/', StudentListAPIView.as_view(), name='api-student-list'),
+    path('api/students/<int:pk>/', StudentDetailAPIView.as_view(), name='api-student-details')
+
     # path('assignment/<int:assignment_id>/submit/',   views.submit_assignment, name='submit_assignment'),
     # path('assignment/<int:assignment_id>/submissions/', views.view_submissions, name='view_submissions'),
 

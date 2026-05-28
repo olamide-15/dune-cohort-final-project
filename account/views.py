@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm
@@ -105,11 +105,11 @@ def student_assignments(request):
 
 @login_required(login_url='login')
 def student_submit_assignment(request, submission_id):
-    submission = AssignmentSubmission.objects.select_related(
-        'assignment'
+    submission = get_object_or_404(
+        AssignmentSubmission.objects.select_related(
+        'assignment')
     ).get(id=submission_id, student=request.user)
 
-    # block resubmission and overdue
     if submission.submitted:
         return redirect('student_assignments')
     if submission.assignment.due_date < timezone.now().date():
@@ -193,7 +193,7 @@ def staff_dashboard(request):
         'announcements':       announcements,
     })
 
-@login_required 
+@login_required
 def staff_student_profiles(request):
     students = CustomUser.objects.filter(
         role='student'
