@@ -1,101 +1,89 @@
 {% load static %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} SmartStudy {% endblock %}</title>
-    <link rel='stylesheet' href="{% static 'css/main.css' %}"> 
-
+    <title>{% block title %}SmartStudy{% endblock %}</title>
+    <link rel='stylesheet' href="{% static 'css/main.css' %}">
 </head>
 <body>
-    <script  src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
 
+    <!-- LEFT SIDEBAR NAV (your existing nav = the sidebar) -->
     <nav>
+        <a href="/" class="logo">
+            <img src="{% static 'image/logo.png' %}" alt="SmartStudy Logo">
+        </a>
+        <h2>SmartStudy</h2>
 
-        {% comment %} <a href="/" class="logo"><img src="{% static 'image/logo.png' %}" alt="smartstudy Logo"> </a>  {% endcomment %}
-            <h2>SmartStudy</h2>
-            <h4>Student Portal</h4>
-        {% comment %} <div class='topNav'>
-            
-
-            <div class="navRight">
-                <a href="dashboard/">Dashboard</a>
-                <a href="/courses/">Course</a>
+        {% if request.user.is_authenticated %}
+            <!-- Profile section -->
+            <div class="sidebar-profile">
+                {% if request.user.image %}
+                    <img src="{{ request.user.image.url }}" alt="Profile Photo" class="profile-img">
+                {% else %}
+                    <div class="avatar-placeholder">{{ request.user.get_full_name|first }}</div>
+                {% endif %}
+                <p class="sidebar-name">{{ request.user.get_full_name }}</p>
+                <p class="sidebar-role">{{ request.user.role|capfirst }}</p>
             </div>
-        </div> {% endcomment %}
-       
-        
 
+            <!-- Nav links based on role -->
+            <div class="nav-links">
+                {% if request.user.is_student %}
+                    <a href="{% url 'student_dashboard' %}">🏠 Dashboard</a>
+                    <a href="{% url 'student_courses' %}">📚 Courses</a>
+                    <a href="{% url 'student_assignments' %}">📝 Assignments</a>
+                    <a href="{% url 'student_profile' %}">👤 Profile</a>
 
-        <div class="nav-links">
-            <a href="/">Home</a>
-            <!-- Using url tag is safer than hardcoding /products -->
-            {% comment %} <a href="">Students</a>   {% endcomment %}
+                {% elif request.user.is_staff_member %}
+                    <a href="{% url 'staff_dashboard' %}">🏠 Dashboard</a>
+                    <a href="{% url 'staff_student_profiles' %}">👥 Student Profiles</a>
+                    <a href="{% url 'staff_add_course' %}">📚 Add Course</a>
+                    <a href="{% url 'staff_add_grade' %}">🎓 Add Grade</a>
+                    <a href="{% url 'staff_view_submissions' %}">📝 View Submissions</a>
+                    <a href="{% url 'staff_add_announcement' %}">📢 Announcement</a>
+                {% endif %}
+            </div>
 
-            {% if request.user.is_authenticated and user.is_student %}
-            <!-- show only to logged-in users -->
-                <a href="{% url 'student_dashboard' %}">Dashboard</a>
-                <span style="color: white; padding: 8px 16px;">Hello, {{ request.user.username }}</span>
-
-                <!-- Corrected logout: Must use POST for Django 5.0+ -->
-                <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-                </form>
-            {% elif request.user.is_authenticated and user.is_staff %}    
-                <a href="{% url 'staff_dashboard' %}">Dashboard</a>
-                <span style="color: white; padding: 8px 16px;">Hello, {{ request.user.username }}</span>
-
-
-                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            <!-- Logout at bottom of sidebar -->
+            <div class="sidebar-footer">
+                <span class="sidebar-username">{{ request.user.username }}</span>
+                <form action="{% url 'logout' %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-link" style="padding:0; margin:0; border:none; background:none;">
-                        Logout
-                    </button>
+                    <button type="submit" class="logout-btn">Logout</button>
                 </form>
+            </div>
 
-                <!-- Corrected logout: Must use POST for Django 5.0+ -->
-                {% comment %} <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-                </form> {% endcomment %}
-            {% else %}
-                <!-- Shown only to loggged-out visitors -->
+        {% else %}
+            <!-- Logged out: show login/register -->
+            <div class="nav-links">
+                <a href="/">Home</a>
                 <a href="{% url 'login' %}">Login</a>
                 <a href="{% url 'register' %}">Register</a>
-            {% endif %}
-
-
-            {% comment %} <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'register' %}">Register</a> {% endcomment %}
-        </div>
-        
-        
+            </div>
+        {% endif %}
     </nav>
 
+    <!-- MAIN CONTENT -->
     <main>
-
         {% if messages %}
-            {% for messages in messages %}
-                <div class='alert alert-{{ message.tags }}'>
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
                     {{ message }}
                 </div>
             {% endfor %}
         {% endif %}
 
-        {% block content%}
+        {% block content %}
         {% endblock %}
-    <footer>
-            <p>copyright &copy; smartstudy</p>
+
+        <footer>
+            <p>copyright &copy; SmartStudy</p>
         </footer>
     </main>
-    
-    
-    
+
 </body>
-
-
 </html>

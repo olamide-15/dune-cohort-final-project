@@ -1,17 +1,17 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from functools import wraps
 from .forms import RegistrationForm
 # from .decorators import role_required
-from portal.models import Enrollment, Grade, AssignmentSubmission, Announcement
+from portal.models import CustomUser, Enrollment, Grade, AssignmentSubmission, Announcement, Course
+from portal.forms import AssignmentForm, GradeForm, AnnouncementForm, CourseForm
+from portal.forms import CourseForm, GradeForm, AnnouncementForm 
 
 
 # Create your views here.
 
 def role_required(role):
     def decorator(view_func):
-        @wraps(view_func)
         @login_required(login_url='login')
         def wrapped(request, *args, **kwargs):
             if request.user.role != role:
@@ -35,15 +35,13 @@ def register(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    role_map = {
+    destinations = {
         'student': 'student_dashboard',
         'parent': 'parent_dashboard',
         'staff': 'staff_dashboard',
     }
-    destination = role_map.get(request.user.role)
-    if destination:
-        return redirect(destination)
-    return redirect('login')
+    target = destinations.get(request.user.role)
+    return redirect(target) if target else redirect('login')
 
 @role_required('student')
 def student_dashboard(request):
@@ -54,7 +52,7 @@ def student_dashboard(request):
 
     grades = Grade.objects.filter(enrollment__student=student).select_related('enrollment__course')
 
-    scores = [g.scores for g in grades]
+    scores = [g.score for g in grades]
     average = round(sum(scores) / len(scores), 1) if scores else None
 
     submissions = AssignmentSubmission.objects.filter(
@@ -63,7 +61,7 @@ def student_dashboard(request):
 
     announcements = Announcement.objects.filter(
         audience__in=['all', 'student']
-    ).order_by('created_at')[:5]
+    ).order_by('-created_at')[:5]
 
     return render(request, 'account/student_dashboard.html', {
         'student':       student,
@@ -73,6 +71,27 @@ def student_dashboard(request):
         'submissions':   submissions,
         'announcements': announcements,
     })
+
+@login_required(login_url='login')
+def student_courses(request):
+    enrollments = Enrollment.objects.filter(
+        student=request.user
+    ).select_related('course')
+    context = {'enrollments': enrollments}
+    return render(request, 'account/student_courses.html', context)
+
+@login_required(login_url='login')
+def student_assignments(request):
+    submissions = AssignmentSubmission.objects.filter(
+        student=request.user
+    ).select_related('assignment__course')
+    context = {'submissions': submissions}
+    return render(request, 'account/student_assignments.html', context)
+
+@login_required(login_url='login')
+def student_profile(request):
+    context = {'student': request.user}
+    return render(request, 'account/student_profile.html', context)
 
 
 @role_required('parent')
@@ -112,8 +131,7 @@ def parent_dashboard(request):
 
 @role_required('staff')
 def staff_dashboard(request):
-    from portal.models import Course
-
+   
     teacher = request.user
     courses = Course.objects.filter(
         teacher=teacher
@@ -134,3 +152,54 @@ def staff_dashboard(request):
         'pending_submissions': pending_submissions,
         'announcements':       announcements,
     })
+
+@login_required 
+def staff_student_profiles(request):
+    students = CustomUser.objects.filter(
+        role='student'
+    ).order_by('last_name', 'first_name')
+
+    return render(request, 'account/staff_student_profiles.html', {
+        'students': students,
+    })
+
+@role_required('staff')
+def staff_add_course(request):
+    form = CourseForm(request.POST or None)
+    if form.is_valid():
+        course = form.save(commit=False)
+        course.teacher = request.user
+        course.save()
+        return redirect('staff_dashboard')
+    return render(request, 'account/staff_add_course.html', {'form': form})
+
+
+@role_required('staff')
+def staff_add_grade(request):
+    form = GradeForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('staff_dashboard')
+    return render(request, 'account/staff_add_grade.html', {'form': form})
+
+
+
+@role_required('staff')
+def staff_view_submissions(request):
+    submissions = AssignmentSubmission.objects.filter(
+        assignment__course__teacher=request.user
+    ).select_related('student', 'assignment__course').order_by('-submitted_at')
+
+    return render(request, 'account/staff_view_submission.html', {
+        'submissions': submissions,
+    })
+
+@role_required('staff')
+def staff_add_announcement(request):
+    form = AnnouncementForm(request.POST or None)
+    if form.is_valid():
+        announcement = form.save(commit=False)
+        announcement.created_by = request.user
+        announcement.save()
+        return redirect('staff_dashboard')
+    return render(request, 'account/staff_add_announcement.html', {'form': form})

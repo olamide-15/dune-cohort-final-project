@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}View Submissions{% endblock %}
+
+{% block content %}
+    <h1>Assignment Submissions</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Assignment</th>
+                <th>Course</th>
+                <th>Status</th>
+                <th>Submitted At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in submissions %}
+            <tr>
+                <td>{{ sub.student.get_full_name }}</td>
+                <td>{{ sub.assignment.title }}</td>
+                <td>{{ sub.assignment.course.code }}</td>
+                <td>{% if sub.submitted %}✅ Submitted{% else %}⏳ Pending{% endif %}</td>
+                <td>{{ sub.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No submissions yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

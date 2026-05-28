@@ -4,15 +4,19 @@ from .models import CustomUser, Course,Grade, Announcement,Assignment, Enrollmen
 
 
 class EditUserForm(forms.ModelForm):
-    class meta:
+    class Meta:
         model = CustomUser
         fields = '__all__'
 
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ['title', 'code']
 
 class GradeForm(forms.ModelForm):
     class Meta:
         model= Grade
-        fields = ['term', 'score']
+        fields = ['term', 'score', 'enrollment']
 
     def clean_score(self):
         score = self.cleaned_data.get('score')
@@ -21,7 +25,7 @@ class GradeForm(forms.ModelForm):
         return score
 
 class AssignmentForm(forms.ModelForm):
-    class meta:
+    class Meta:
         model = Assignment
         fields = ['title', 'due_date']
 
@@ -29,10 +33,16 @@ class AssignmentForm(forms.ModelForm):
         due_date = self.cleaned_data.get('due_data')
         if due_date < timezone.now().date():
             raise forms.ValidationError('Due date cannot be in the past')
+        return due_date
         
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
         fields = ['date']
+
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ['title', 'body', 'audience']
         
         

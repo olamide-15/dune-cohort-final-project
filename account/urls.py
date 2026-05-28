@@ -9,7 +9,19 @@ urlpatterns = [
     path('accounts/register/', views.register, name='register'),
 
     path('dashboard/', views.dashboard, name='dashboard'),
+
     path('dashboard/student/', views.student_dashboard, name='student_dashboard'),
+    path('dashboard/student/courses/', views.student_courses, name='student_courses'),
+    path('dashboard/student/assignments/', views.student_assignments, name='student_assignments'),
+    path('dashboard/student/profile/', views.student_profile, name='student_profile'),
+
     path('dashboard/parent/', views.parent_dashboard, name='parent_dashboard'),
+
+    
     path('dashboard/staff/', views.staff_dashboard,name='staff_dashboard'),    
+    path('dashboard/staff/students/', views.staff_student_profiles, name='staff_student_profiles'),
+    path('dashboard/staff/courses/add/', views.staff_add_course, name='staff_add_course'),
+    path('dashboard/staff/grades/add/', views.staff_add_grade, name='staff_add_grade'),
+    path('dashboard/staff/submissions/', views.staff_view_submissions, name='staff_view_submissions'),
+    path('dashboard/staff/announcements/add/', views.staff_add_announcement, name='staff_add_announcement'),
 ]

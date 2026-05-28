@@ -18,6 +18,20 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.get_full_name()} ({self.role})"
     
+    @property
+    def is_student(self):
+        return self.role == 'student'
+
+    @property
+    def is_parent(self):
+        return self.role == 'parent'
+
+    @property
+    def is_staff_member(self):       # ⚠️ don't name it is_staff — see note below
+        return self.role == 'staff'
+
+
+
 class Course(models.Model):
     title   = models.CharField(max_length=100)
     code    = models.CharField(max_length=20)

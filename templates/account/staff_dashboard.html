@@ -6,6 +6,30 @@
 
     <h1>Welcome, {{ request.user.get_full_name }}</h1>
     <p>Role: {{ request.user.role }}</p>
-    <a href="{% url 'logout' %}">Logout</a>
+    
+
+
+    <h1>Staff Dashboard</h1>
+    <div class="stats">
+        <div class="stat-card">
+            <h3>{{ total_students }}</h3>
+            <p>Total Students</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_courses }}</h3>
+            <p>Your Courses</p>
+        </div>
+    </div>
+
+    <h2>Recent Announcements</h2>
+    {% for a in recent_announcements %}
+        <div class="card">
+            <strong>{{ a.title }}</strong>
+            <span class="badge">{{ a.audience }}</span>
+            <p>{{ a.created_at|date:"d M Y" }}</p>
+        </div>
+    {% empty %}
+        <p>No announcements yet.</p>
+    {% endfor %}
 
 {% endblock %}

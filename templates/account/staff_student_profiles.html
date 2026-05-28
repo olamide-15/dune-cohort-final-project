@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Profiles{% endblock %}
+
+{% block content %}
+    <h1>Student Profiles</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Class</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.get_full_name }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.class_name }}</td>
+                <td>{{ student.phone }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No students found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
