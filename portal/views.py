@@ -14,6 +14,12 @@ from rest_framework.response import Response
 from .serializers import UserSerializer, CourseSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
+from .pagination import StandardResultsPagination
+
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+
 
 
 
@@ -225,6 +231,11 @@ def remove_enrollment(request, enrollment_id):
 
 
 class StudentListAPIView(APIView):
+    queryset = CustomUser.objects.filter('student')
+    serializer_class = UserSerializer
+    pagination_class = StandardResultsPagination
+
+
     def get(self, request):        
         students = CustomUser.objects.filter(role='student')
         serializer =UserSerializer(students, many=True)
@@ -269,6 +280,21 @@ class StudentDetailAPIView(APIView):
         student.delete()
         # 204 No Content — success but no data to return
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+""" STUDENT CREATE API VIEW"""
+
+class StudentCreateAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    permission_classes =[IsAuthenticated]
+
+    def post(self, request):
+        serializer = UserSerializer(data= request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
     
 
 # class StudentListAPIView(APIView):

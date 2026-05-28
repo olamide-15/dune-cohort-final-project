@@ -41,9 +41,14 @@ INSTALLED_APPS = [
     'portal',
     'account',
     'rest_framework',
+    # 'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'smartstudy.urls'
 
@@ -134,5 +141,24 @@ LOGOUT_REDIRECT_URL = '/login/'
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 6,
+
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+    #  'rest_framework.authentication.TokenAuthentication',
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    # Access token expires after 15 minutes — short for security
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    # Refresh token lasts 1 day — client uses it to get a new access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }

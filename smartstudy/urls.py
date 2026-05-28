@@ -18,13 +18,25 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include 
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair' ),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('', include('portal.urls')),
     path('', include('account.urls')),
+    path('api-auth/token/', obtain_auth_token, name='api-token'),
 ]
 
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+
+#     {
+#     "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MDA5NTc2OCwiaWF0IjoxNzgwMDA5MzY4LCJqdGkiOiJjNDhkM2ExZmQxZTY0MmQwOGQxMmJiMGY3MzBmYzc2NyIsInVzZXJfaWQiOiIxIn0.5m1kCg2ixmJxvS33BkflpD8SCY-MeHt5eaBSwvM5ico",
+#     "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgwMDEwMjY4LCJpYXQiOjE3ODAwMDkzNjgsImp0aSI6IjcyYzFjZjM5YTg5NDRhNGU5MTY2Mjk2ZjVkNDNjZmYwIiwidXNlcl9pZCI6IjEifQ.K42IKuY30P7eAGcxmy9alR9b-hy4F29Ub_Mjde09bIY"
+# }
