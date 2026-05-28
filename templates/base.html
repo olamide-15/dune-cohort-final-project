@@ -11,6 +11,15 @@
 <body>
     <script src="{% static 'js/main.js' %}"></script>
 
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Overlay -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
     <!-- LEFT SIDEBAR NAV (your existing nav = the sidebar) -->
     <nav>
         <a href="/" class="logo">
@@ -45,6 +54,13 @@
                     <a href="{% url 'staff_add_grade' %}">🎓 Add Grade</a>
                     <a href="{% url 'staff_view_submissions' %}">📝 View Submissions</a>
                     <a href="{% url 'staff_add_announcement' %}">📢 Announcement</a>
+
+                {% elif request.user.is_admin %}
+                    <a href="{% url 'admin_dashboard' %}">🏠 Dashboard</a>
+                    <a href="{% url 'admin_enrollments' %}">📋 Enrollments</a>
+                    <a href="{% url 'admin_enroll_student' %}">➕ Enroll Student</a>
+                    <a href="{% url 'admin_add_student' %}">👤 Add New Student</a>
+
                 {% endif %}
             </div>
 

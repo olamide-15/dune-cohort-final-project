@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Remove Enrollment{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Remove Enrollment</h1>
+</div>
+
+<div class="container">
+    <div class="card">
+        <p style="margin-bottom:20px;">
+            Are you sure you want to remove
+            <strong>{{ enrollment.student.get_full_name }}</strong>
+            from <strong>{{ enrollment.course.title }}</strong>?
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Yes, Remove</button>
+            <a href="{% url 'admin_enrollments' %}"
+               style="margin-left:10px; font-size:14px; color:#aaa;">Cancel</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

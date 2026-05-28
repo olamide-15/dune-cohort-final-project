@@ -8,6 +8,7 @@ class CustomUser(AbstractUser):
         ('student', 'Student'),
         ('parent', 'Parent'),
         ('staff', 'Staff'),
+        ('Admin', 'Admin'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICE)
     phone = models.CharField(max_length=20, blank=True)
@@ -27,8 +28,12 @@ class CustomUser(AbstractUser):
         return self.role == 'parent'
 
     @property
-    def is_staff_member(self):       # ⚠️ don't name it is_staff — see note below
+    def is_staff_member(self):       
         return self.role == 'staff'
+    
+    @property
+    def is_admin(self):
+        return self.role == 'admin'
 
 
 
@@ -114,6 +119,7 @@ class AssignmentSubmission(models.Model):
     )
     submitted    = models.BooleanField(default=False)
     submitted_at = models.DateTimeField(null=True, blank=True)
+    file         = models.FileField(upload_to='submissions/', null=True, blank= True)
 
     class Meta:
         unique_together = ('assignment', 'student')  # one submission per student per assignment

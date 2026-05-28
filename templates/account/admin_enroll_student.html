@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Enroll Student{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Enroll a Student</h1>
+</div>
+
+<div class="container">
+    <div class="card">
+        <div class="form">
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <p>
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <small style="color:#e94560;">{{ field.errors.0 }}</small>
+                    {% endif %}
+                </p>
+                {% endfor %}
+                <button type="submit" class="btn">Enroll</button>
+                <a href="{% url 'admin_enrollments' %}"
+                   style="margin-left:10px; font-size:14px; color:#aaa;">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}My Courses{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>My Courses</h1>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Course Title</th>
+                <th>Teacher</th>
+                <th>Enrolled On</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enrollment in enrollments %}
+            <tr>
+                <td>{{ enrollment.course.code }}</td>
+                <td>{{ enrollment.course.title }}</td>
+                <td>
+                    {% if enrollment.course.teacher %}
+                        {{ enrollment.course.teacher.get_full_name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+                <td>{{ enrollment.date|date:"d M Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">You are not enrolled in any courses yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

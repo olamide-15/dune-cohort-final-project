@@ -13,6 +13,7 @@ urlpatterns = [
     path('dashboard/student/', views.student_dashboard, name='student_dashboard'),
     path('dashboard/student/courses/', views.student_courses, name='student_courses'),
     path('dashboard/student/assignments/', views.student_assignments, name='student_assignments'),
+    path('dashboard/student/assignments/submit/<int:submission_id>/', views.student_submit_assignment, name='student_submit_assignment'),
     path('dashboard/student/profile/', views.student_profile, name='student_profile'),
 
     path('dashboard/parent/', views.parent_dashboard, name='parent_dashboard'),
@@ -24,4 +25,10 @@ urlpatterns = [
     path('dashboard/staff/grades/add/', views.staff_add_grade, name='staff_add_grade'),
     path('dashboard/staff/submissions/', views.staff_view_submissions, name='staff_view_submissions'),
     path('dashboard/staff/announcements/add/', views.staff_add_announcement, name='staff_add_announcement'),
+
+    path('dashboard/admin/', views.admin_dashboard,  name='admin_dashboard'),
+    path('dashboard/admin/enrollments/', views.admin_enrollments,  name='admin_enrollments'),
+    path('dashboard/admin/enrollments/add/',views.admin_enroll_student,name='admin_enroll_student'),
+    path('dashboard/admin/enrollments/remove/<int:enrollment_id>/', views.admin_remove_enrollment, name='admin_remove_enrollment'),
+    path('dashboard/admin/students/add/', views.admin_add_student, name='admin_add_student'),
 ]

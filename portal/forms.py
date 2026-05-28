@@ -1,6 +1,7 @@
 from django import forms
 from django.utils import timezone
-from .models import CustomUser, Course,Grade, Announcement,Assignment, Enrollment
+from .models import CustomUser, Course,Grade, Announcement,Assignment, Enrollment, AssignmentSubmission
+from django.contrib.auth.hashers import make_password
 
 
 class EditUserForm(forms.ModelForm):
@@ -44,5 +45,34 @@ class AnnouncementForm(forms.ModelForm):
     class Meta:
         model = Announcement
         fields = ['title', 'body', 'audience']
-        
-        
+
+class SubmissionForm(forms.ModelForm):
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['file']
+
+
+class AdminEnrollmentForm(forms.ModelForm):
+    student = forms.ModelChoiceField(
+        queryset=CustomUser.objects.filter(role='student').order_by('last_name')
+    )
+
+    class Meta:
+        model = Enrollment
+        fields = ['student', 'course', 'date']
+
+
+class AdminAddStudentForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'username', 'email', 'phone', 'class_name', 'password']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.role = 'student'                              # always set to student
+        user.password = make_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+        return user        

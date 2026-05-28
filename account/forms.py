@@ -10,6 +10,10 @@ class LoginForm(forms.Form):
         password : forms.TextInput(attrs={'placeholder':'password'})
     }
 class RegistrationForm(UserCreationForm):
+    role = forms.ChoiceField(choices=[
+         ('student', 'Student'),
+         ('parent', 'Parent'),
+    ])
     class Meta:
         model = CustomUser
         fields = ['username', 'first_name', 'last_name', 'email', 'role', 'phone', 'class_name', 'password1','password2']

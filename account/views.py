@@ -2,10 +2,10 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm
-# from .decorators import role_required
+from django.utils import timezone 
 from portal.models import CustomUser, Enrollment, Grade, AssignmentSubmission, Announcement, Course
 from portal.forms import AssignmentForm, GradeForm, AnnouncementForm, CourseForm
-from portal.forms import CourseForm, GradeForm, AnnouncementForm 
+from portal.forms import CourseForm, GradeForm, AnnouncementForm, SubmissionForm, AdminEnrollmentForm, AdminAddStudentForm
 
 
 # Create your views here.
@@ -39,6 +39,7 @@ def dashboard(request):
         'student': 'student_dashboard',
         'parent': 'parent_dashboard',
         'staff': 'staff_dashboard',
+        'admin': 'admin_dashboard',
     }
     target = destinations.get(request.user.role)
     return redirect(target) if target else redirect('login')
@@ -82,11 +83,50 @@ def student_courses(request):
 
 @login_required(login_url='login')
 def student_assignments(request):
+    today = timezone.now().date()
     submissions = AssignmentSubmission.objects.filter(
         student=request.user
-    ).select_related('assignment__course')
-    context = {'submissions': submissions}
+    ).select_related('assignment__course').order_by('assignment__due_date')
+      
+    for sub in submissions:
+        if sub.submitted:
+            sub.status = 'submitted'
+        elif sub.assignment.due_date < today:
+            sub.status ='Overdue'
+        elif sub.assignment.due_date <=today + timezone.timedelta(days=3):
+            sub.status = 'due_soon'
+        else:
+            sub.status = 'pending'
+    
+    context = {'submissions': submissions,
+               'today': today,}
     return render(request, 'account/student_assignments.html', context)
+
+
+@login_required(login_url='login')
+def student_submit_assignment(request, submission_id):
+    submission = AssignmentSubmission.objects.select_related(
+        'assignment'
+    ).get(id=submission_id, student=request.user)
+
+    # block resubmission and overdue
+    if submission.submitted:
+        return redirect('student_assignments')
+    if submission.assignment.due_date < timezone.now().date():
+        return redirect('student_assignments')
+
+    form = SubmissionForm(request.POST or None, request.FILES or None, instance=submission)
+    if form.is_valid():
+        sub = form.save(commit=False)
+        sub.submitted = True
+        sub.submitted_at = timezone.now()
+        sub.save()
+        return redirect('student_assignments')
+
+    return render(request, 'account/student_submit.html', {
+        'form': form,
+        'submission': submission,
+    })
 
 @login_required(login_url='login')
 def student_profile(request):
@@ -203,3 +243,61 @@ def staff_add_announcement(request):
         announcement.save()
         return redirect('staff_dashboard')
     return render(request, 'account/staff_add_announcement.html', {'form': form})
+
+@role_required('admin')
+def admin_dashboard(request):
+    total_students   = CustomUser.objects.filter(role='student').count()
+    total_courses    = Course.objects.count()
+    total_enrollments = Enrollment.objects.count()
+
+    return render(request, 'account/admin_dashboard.html', {
+        'total_students':    total_students,
+        'total_courses':     total_courses,
+        'total_enrollments': total_enrollments,
+    })
+
+@role_required('admin')
+def admin_enrollments(request):
+    enrollments = Enrollment.objects.select_related(
+        'student', 'course'
+    ).order_by('course__title', 'student__last_name')
+
+    return render(request, 'account/admin_enrollments.html', {
+        'enrollments': enrollments,
+    })
+
+@role_required('admin')
+def admin_enroll_student(request):
+    form = AdminEnrollmentForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('admin_enrollments')
+    return render(request, 'account/admin_enroll_student.html', {
+        'form': form,
+    })
+
+@role_required('admin')
+def admin_remove_enrollment(request, enrollment_id):
+    try:
+        enrollment = Enrollment.objects.select_related(
+            'student', 'course'
+        ).get(id=enrollment_id)
+    except Enrollment.DoesNotExist:
+        return redirect('admin_enrollments')
+
+    if request.method == 'POST':
+        enrollment.delete()
+        return redirect('admin_enrollments')
+
+    return render(request, 'account/admin_confirm_remove.html', {
+        'enrollment': enrollment,
+    })
+
+@role_required('admin')
+def admin_add_student(request):
+    form = AdminAddStudentForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('admin_dashboard')
+    return render(request, 'account/admin_add_student.html', {'form': form})
+

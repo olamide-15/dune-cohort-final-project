@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}My Assignments{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>My Assignments</h1>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Assignment</th>
+                <th>Course</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in submissions %}
+            <tr>
+                <td>{{ sub.assignment.title }}</td>
+                <td>{{ sub.assignment.course.code }}</td>
+                <td>{{ sub.assignment.due_date|date:"d M Y" }}</td>
+                <td>
+                    {% if sub.status == 'submitted' %}
+                        <span class="badge badge-success">✅ Submitted</span>
+                    {% elif sub.status == 'overdue' %}
+                        <span class="badge badge-danger">❌ Overdue</span>
+                    {% elif sub.status == 'due_soon' %}
+                        <span class="badge badge-warning">⚠️ Due Soon</span>
+                    {% else %}
+                        <span class="badge badge-neutral">📋 Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if sub.status == 'submitted' %}
+                        <small style="color:#aaa;">{{ sub.submitted_at|date:"d M Y H:i" }}</small>
+                    {% elif sub.status == 'overdue' %}
+                        <small style="color:#e94560;">Deadline passed</small>
+                    {% else %}
+                        <a href="{% url 'student_submit_assignment' sub.id %}" class="btn">Submit</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No assignments found.</td></tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

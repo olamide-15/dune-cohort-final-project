@@ -5,6 +5,11 @@ from django.contrib.auth.decorators import login_required
 from functools import wraps
 from .forms import AssignmentForm, GradeForm, EnrollmentForm
 from .models import AssignmentSubmission,Assignment, Course, Enrollment, Grade
+import json
+from django.http import JsonResponse
+from .models import CustomUser
+
+
 
 # Create your views here.
 def home(request):
@@ -14,6 +19,9 @@ def course_list(request):
     courses = Course.objects.all()
     context = {'courses': courses}
     return render(request, 'portal/course_list.html', context)
+
+
+
 
 def course_details(request, pk):
     course = get_object_or_404(Course, pk= pk)
