@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Grade{% endblock %}
+{% block title %}Add Course{% endblock %}
 
 {% block content %}
-    <h1>Add Course</h1>
+    <h1>Add Assignment</h1>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save</button>
+        <button type="submit">send</button>
     </form>
 {% endblock %}

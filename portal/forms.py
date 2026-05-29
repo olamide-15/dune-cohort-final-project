@@ -28,7 +28,7 @@ class GradeForm(forms.ModelForm):
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['title', 'due_date']
+        fields = ['title', 'description' 'due_date']
 
     def clean_due_date(self):
         due_date = self.cleaned_data.get('due_data')

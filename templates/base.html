@@ -52,8 +52,9 @@
                     <a href="{% url 'staff_student_profiles' %}">👥 Student Profiles</a>
                     <a href="{% url 'staff_add_course' %}">📚 Add Course</a>
                     <a href="{% url 'staff_add_grade' %}">🎓 Add Grade</a>
+                    <a href="{% url 'staff_add_assignment' %}"> Add Assignment</a>
                     <a href="{% url 'staff_view_submissions' %}">📝 View Submissions</a>
-                    <a href="{% url 'staff_add_announcement' %}">📢 Announcement</a>
+                    {% comment %} <a href="{% url 'staff_add_announcement' %}">📢 Announcement</a> {% endcomment %}
 
                 {% elif request.user.is_admin %}
                     <a href="{% url 'admin_dashboard' %}">🏠 Dashboard</a>

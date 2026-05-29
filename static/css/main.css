@@ -415,10 +415,10 @@ th {
 
 
 
-@media (max-width: 768px) {
+@media(max-width: 768px) {
     body{
         flex-direction: column;
-        width: 100%;
+        /* width: 100%; */
         margin: 0;
         gap: 0;
     }
@@ -430,7 +430,7 @@ th {
         left: -100%;
         width: 70%;
         max-width: 280px;
-        height: 100vh;
+        /* height: 100vh; */
         z-index: 999;
         transition: left 0.3s ease;
         overflow-y: auto;

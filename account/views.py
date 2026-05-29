@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm
@@ -244,6 +245,18 @@ def staff_add_announcement(request):
         return redirect('staff_dashboard')
     return render(request, 'account/staff_add_announcement.html', {'form': form})
 
+@role_required('staff')
+def staff_add_assignment(request):
+    form = AssignmentForm(request.POST or None)
+    if form.is_valid():
+        assignment = form.save(commit=False)
+        assignment.created_by = request.user
+        assignment.save()
+        messages.success(request, "Assignment created successfully.")
+
+        return redirect('staff_dashboard')
+    return render(request, 'account/staff_add_assignment.html', {'form': form})
+
 @role_required('admin')
 def admin_dashboard(request):
     total_students   = CustomUser.objects.filter(role='student').count()
@@ -272,6 +285,7 @@ def admin_enroll_student(request):
     if form.is_valid():
         form.save()
         return redirect('admin_enrollments')
+    messages.success(request, 'student added sucessfully')
     return render(request, 'account/admin_enroll_student.html', {
         'form': form,
     })
