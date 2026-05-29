@@ -16,6 +16,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from .pagination import StandardResultsPagination
 
+from rest_framework.generics import ListAPIView
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -231,9 +234,13 @@ def remove_enrollment(request, enrollment_id):
 
 
 class StudentListAPIView(APIView):
-    queryset = CustomUser.objects.filter('student')
+    queryset = CustomUser.objects.filter(role='student')
     serializer_class = UserSerializer
     pagination_class = StandardResultsPagination
+    filterset_fields = ['course', 'student_class']
+    search_fields = ['name', 'username']
+    ordering_fields = ['student_class']
+    ordering = ['created_at'] 
 
 
     def get(self, request):        

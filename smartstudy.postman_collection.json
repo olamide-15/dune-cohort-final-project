@@ -1,0 +1,19 @@
+{
+  "info": {
+    "_postman_id": "3cf117b6-4214-4f1c-9404-102708e07849",
+    "name": "smartstudy",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54624809",
+    "_collection_link": "https://go.postman.co/collection/54624809-3cf117b6-4214-4f1c-9404-102708e07849?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "New Request",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ]
+}
