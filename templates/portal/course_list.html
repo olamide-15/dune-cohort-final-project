@@ -3,11 +3,11 @@
 {% block tittle %} Courses {% endblock %}
 
 {% block content %}
-    <div>
+    <div class="container">
         {% for course in courses %}
-            <div>
+            <div class="card">
                 <a href="{% url 'course_details' course.pk %}"> <h3>{{ course.title }}</h3></a>
-                <p> {{ course.teacher }}</p>
+                {% comment %} <p> {{ course.teacher }}</p> {% endcomment %}
 
                 <br>
                 <P>{{ course.code }}</p>

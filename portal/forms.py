@@ -8,11 +8,12 @@ class EditUserForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = '__all__'
+        exclude = ['password', 'last_login', 'date_joined']
 
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['title', 'code']
+        fields = ['title', 'code', ]
 
 class GradeForm(forms.ModelForm):
     class Meta:
@@ -28,7 +29,7 @@ class GradeForm(forms.ModelForm):
 class AssignmentForm(forms.ModelForm):
     class Meta:
         model = Assignment
-        fields = ['title', 'description' 'due_date']
+        fields = ['title', 'description', 'due_date']
 
     def clean_due_date(self):
         due_date = self.cleaned_data.get('due_data')
@@ -39,7 +40,7 @@ class AssignmentForm(forms.ModelForm):
 class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
-        fields = ['date']
+        fields = '__all__'
 
 class AnnouncementForm(forms.ModelForm):
     class Meta:
@@ -75,4 +76,6 @@ class AdminAddStudentForm(forms.ModelForm):
         user.password = make_password(self.cleaned_data['password'])
         if commit:
             user.save()
-        return user        
+        return user    
+
+    

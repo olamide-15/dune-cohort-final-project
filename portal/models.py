@@ -12,7 +12,11 @@ class CustomUser(AbstractUser):
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICE)
     phone = models.CharField(max_length=20, blank=True)
-    image = models.ImageField(upload_to='students/', blank=True, null=True)
+    profile_picture = models.ImageField(
+            upload_to='profile_pictures/',
+            null=True,
+            blank=True
+        )
     class_name = models.CharField(max_length=20, blank=True)
     children = models.ManyToManyField('self', blank=True,)
 
@@ -40,6 +44,7 @@ class CustomUser(AbstractUser):
 class Course(models.Model):
     title   = models.CharField(max_length=100)
     code    = models.CharField(max_length=20)
+    files = models.FileField(upload_to='courses/', blank=True, null=True)    
     teacher = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,
@@ -53,6 +58,12 @@ class Course(models.Model):
 
 
 class Enrollment(models.Model):
+    LEVEL_CHOICES = [
+        {'1st', '100'},
+        {'1st', '200'},
+        {'1st', '300'},
+        {'1st', '400'},
+    ]
     student = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
@@ -101,6 +112,7 @@ class Assignment(models.Model):
     )
     title    = models.CharField(max_length=200)
     due_date = models.DateField()
+    description = models.TextField(blank=True, default='')
 
     def __str__(self):
         return f"{self.title} ({self.course.code})"
@@ -148,3 +160,5 @@ class Announcement(models.Model):
 
     def __str__(self):
         return f"{self.title} → {self.audience}"
+    
+# class studentprofil

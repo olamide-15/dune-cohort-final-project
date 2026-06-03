@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}
+    {% if form.instance.pk %}
+        Edit student
+    {% else %}
+        Add product
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h2>
+        {% if form.instance.pk %}
+            Edit student
+        {% else %}
+            Add New student
+        {% endif %}
+    </h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+      {% if product.image %}
+        <img 
+          src="{{ student.image.url }}" 
+          alt="{{ student.name }}" 
+          style="width: 20%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 20px 0;">
+        {% endif %}
+    {{form.as_p}}
+
+    <button type="submit">
+        {% if form.instance.pk %}
+            Update Product
+        {% else %}
+            Save Product
+        {% endif %}
+    </button>
+</form>
+
+{% if form.errors %}
+    <div style="margin-top:20px; color: red">
+        <h4>Errors:</h4>
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for errors in error %}
+                    <li><strong>{{ field}}</strong>: {{errors}}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+    <br>
+    <a href="{% url 'admin_dashboard' %}"> Dashboard </a>
+{% endblock %}

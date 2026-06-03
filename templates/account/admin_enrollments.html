@@ -32,6 +32,8 @@
                 <td>
                     <a href="{% url 'admin_remove_enrollment' e.id %}"
                        style="color:#e94560; font-size:13px;">Remove</a>
+                    <a href="{% url 'admin_update_enrollment' e.id %}"
+                       style="color:#4a90e2; font-size:13px; margin-right:8px;">Edit</a>
                 </td>
             </tr>
             {% empty %}

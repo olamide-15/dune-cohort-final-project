@@ -2,84 +2,94 @@
 
 {% block content %}
 
+<div class="contain">
+    <div class="page-header">
+        {% if student.ima %}
+<!-- product.image.url gives the full URL to the uploaded file -->
+            <img src='{{ student.image.url }}' alt='{{ student.name }}'>
+        {% else %}
+             <p>No image
+        {% endif %}
+        <h1>Welcome, {{ student.get_full_name }}</h1>
+        <p>Class Name:{{ student.class_name }}</p>
 
-
-
-<div class="page-header">
-    <h1>Welcome, {{ student.get_full_name }}</h1>
-    <p>{{ student.class_name }}</p>
-</div>
-
-<!-- Stats -->
-<div class="stats">
-    <div class="stat-card">
-        <h3>{{ enrollments.count }}</h3>
-        <p>Courses Enrolled</p>
+        <div class="nav-link">
+            <a href="{% url 'student_courses' %}">📚 Courses</a>
+            <a href="{% url 'student_assignments' %}">📝 Assignments</a>
+            <a href="{% url 'student_profile' %}">👤 Profile</a>
+        </div>
     </div>
-    
-    <div class="stat-card">
-        <h3>{{ submissions.count }}</h3>
-        <p>Assignments</p>
-    </div>
-</div>
 
-<!-- Recent Grades -->
-<div class="page-header">
-    <h2>Recent Grades</h2>
-</div>
-<div class="table-wrapper">
-    <table>
-        <thead>
-            <tr>
-                <th>Course</th>
-                <th>Term</th>
-                <th>Score</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for grade in grades %}
-            <tr>
-                <td>{{ grade.enrollment.course.title }}</td>
-                <td>{{ grade.term }}</td>
-                <td>{{ grade.score }}%</td>
-            </tr>
+    <div class='contain2'> 
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-card">
+                <h3>{{ enrollments.count }}</h3>
+                <p>Courses Enrolled</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>{{ submissions.count }}</h3>
+                <p>Assignments</p>
+            </div>
+        </div>
+
+        <!-- Recent Grades -->
+        <div class="page-header">
+            <h2>Recent Grades</h2>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Term</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.enrollment.course.title }}</td>
+                        <td>{{ grade.term }}</td>
+                        <td>{{ grade.score }}%</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3">No grades recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        
+    </div>
+    <!-- Announcements -->
+        
+        <div style="padding: 0 16px;">
+            {% for a in announcements %}
+            <div class="card">
+                <strong>{{ a.title }}</strong>
+                <p style="color:#555; font-size:13px; margin-top:6px;">{{ a.body }}</p>
+                <small style="color:#aaa;">{{ a.created_at|date:"d M Y" }}</small>
+            </div>
             {% empty %}
-            <tr><td colspan="3">No grades recorded yet.</td></tr>
+            <p style="padding:10px;">No announcements at the moment.</p>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    
 </div>
 
-<!-- Announcements -->
-<div class="page-header">
-    <h2>Announcements</h2>
-</div>
-<div style="padding: 0 16px;">
-    {% for a in announcements %}
-    <div class="card">
-        <strong>{{ a.title }}</strong>
-        <p style="color:#555; font-size:13px; margin-top:6px;">{{ a.body }}</p>
-        <small style="color:#aaa;">{{ a.created_at|date:"d M Y" }}</small>
-    </div>
-    {% empty %}
-    <p style="padding:10px;">No announcements at the moment.</p>
-    {% endfor %}
-</div>
 
-        {% comment %} <div>
-            {% if student.image %}
-                    <!-- product.image.url gives the full URL to the uploaded file -->
-                    <img src='{{ student.image.url }}' alt='{{ student.name }}'>
-                {% else %}
-                    <p>No image
-                {% endif %}
+
+        <div>
+            
 
 
                 <div> {{student.get_full_name}} </div>
                 <div> {{student.email}} </div>
                 <p>Role: {{ request.user.role }}</p>
                 
-        </div> {% endcomment %}
+        </div> 
 
        
 

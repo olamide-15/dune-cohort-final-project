@@ -1,9 +1,52 @@
 {% extends 'base.html'%}
+{% load static %}
 
 {% block title %} Welcome to smartstudy  {% endblock %}
 {% block content%}
+<div class="home">
+    <div class="heroDiv">
+         <div class="txt">
+            <h1> Your central Hub for academic sucess!</h1>
+            <p>Stay organised, do your school work with ease</p>
+        </div>
+        <div class="imgsec">
+            <img src="{% static 'image/a-computer-group-pic.jpg' %}" alt="image">
+        </div>
+    </div>
 
-    <h1 style="font-size:2.5rem; margin-bottom:10px;"><strong>SmartStudy</strong></h1>
-    <p style="color:#555; font-size:1rem; max-width:400px; margin-bottom:40px;">A digital learning and management system for students, teachers, and parents.</p>
+    <div class="maincard" >
+            <div class="card">
+                <h2>My Dashboard</h2>
+                <a href="{% url 'login' %}" class="btn">View Progress</a>
+            </div>
+            <div class="card">
+                <h2>My Courses</h2>
+                <a href="{% url 'course_list' %}" class="btn">View Courses</a>
+            </div>
+            <div class="card">
+                <h2>Announcement</h2>
+                <div style="padding: 0 16px;">
+            {% for a in announcements %}
+            <div class="card">
+                <strong>{{ a.title }}</strong>
+                <p style="color:#555; font-size:13px; margin-top:6px;">{{ a.body }}</p>
+                <small style="color:#aaa;">{{ a.created_at|date:"d M Y" }}</small>
+            </div>
+            {% empty %}
+            <p style="padding:10px;">No announcements at the moment.</p>
+            {% endfor %}
+        </div>
+                <a href="{% url 'login' %}" class="btn">show more ></a>
+            </div>
+
+    </div>
+
+   
+
+
+</div>
+
+    {% comment %} <h1 style="font-size:2.5rem; margin-bottom:10px;"><strong>SmartStudy</strong></h1> 
+    <p style="color:#555; font-size:1rem; max-width:400px; margin-bottom:40px;">A digital learning and management system for students, teachers, and parents.</p>  {% endcomment %}
 
 {%  endblock %}

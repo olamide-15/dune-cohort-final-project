@@ -1,16 +1,30 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Announcement, Course, Assignment,Enrollment, AssignmentSubmission, Grade
+from django.utils.html import format_html
+
 
 # Register your models here.
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    list_display = ['username', 'get_full_name', 'email', 'role', 'is_active']
+    list_display = ['username', 'get_full_name', 'email', 'role', 'is_active','thumbnail']
     list_filter = ['role', 'is_active', 'is_staff']
     search_fields = ['username', 'first_name', 'last_name', 'email']
     fieldsets = UserAdmin.fieldsets + (
         ('Portal info', {'fields': ('role', 'phone', 'class_name', 'children')}),
     )
+
+    def thumbnail(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" width="60" height="60" '
+                'style="object-fit:cover; border-radius:4px;">',
+                obj.image.url
+            )
+        return "No Image"
+    
+    thumbnail.short_description = 'Image'
+
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):

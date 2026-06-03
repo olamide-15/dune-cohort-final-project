@@ -6,7 +6,7 @@ from .forms import RegistrationForm
 from django.utils import timezone 
 from portal.models import CustomUser, Enrollment, Grade, AssignmentSubmission, Announcement, Course
 from portal.forms import AssignmentForm, GradeForm, AnnouncementForm, CourseForm
-from portal.forms import CourseForm, GradeForm, AnnouncementForm, SubmissionForm, AdminEnrollmentForm, AdminAddStudentForm
+from portal.forms import EditUserForm, CourseForm, GradeForm, AnnouncementForm, SubmissionForm, AdminEnrollmentForm, AdminAddStudentForm
 
 
 # Create your views here.
@@ -313,5 +313,15 @@ def admin_add_student(request):
     if form.is_valid():
         form.save()
         return redirect('admin_dashboard')
-    return render(request, 'account/admin_add_student.html', {'form': form})
+    return render(request, 'account/admin_studentform.html', {'form': form})
+
+
+# def admin_edit_user(request, user_id):
+#     user = get_object_or_404(CustomUser, id=user_id)
+
+#     form = EditUserForm(request.POST or None)
+#     if form.is_valid():
+#         form.save()
+#         return redirect('admin_dashboard')
+#     return render(request, 'account/admin_update_studentprofile.html', {'form': form})
 

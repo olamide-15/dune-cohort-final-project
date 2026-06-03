@@ -4,9 +4,14 @@
 
 {% block content %}
     <h1>Add Assignment</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">send</button>
-    </form>
+    <div class="container">
+        <div class="card">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">send</button>
+            </form>
+        </div>
+    </div>
+    
 {% endblock %}

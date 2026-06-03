@@ -200,7 +200,7 @@ def enroll_student(request):
     return render(request, 'portal/enroll_student.html', {'form': form})
 
 
-@role_required('staff')
+@role_required('admin')
 def enrollment_list(request):
     enrollments = Enrollment.objects.all().select_related('student', 'course')
     return render(request, 'portal/enrollment_list.html', {
@@ -208,7 +208,7 @@ def enrollment_list(request):
     })
 
 
-@role_required('staff')
+@role_required('admin')
 def remove_enrollment(request, enrollment_id):
     enrollment = get_object_or_404(Enrollment, id=enrollment_id)
     if request.method == 'POST':
@@ -217,6 +217,21 @@ def remove_enrollment(request, enrollment_id):
         return redirect('enrollment_list')
     return render(request, 'portal/confirm_delete.html', {'object': enrollment})
 
+
+@role_required('admin')
+def update_enrollment(request, enrollment_id):
+    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+    
+    if request.method == 'POST':
+        form = EnrollmentForm(request.POST, instance=enrollment)  # bind POST data to existing instance
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Enrollment updated.')
+            return redirect('enrollment_list')
+    else:
+        form = EnrollmentForm(instance=enrollment)  # pre-populate form with existing data
+    
+    return render(request, 'account/admin_update_student.html', {'form': form, 'object': enrollment})
 
 #  API VIEWS
 
