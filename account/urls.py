@@ -33,4 +33,6 @@ urlpatterns = [
     path('dashboard/admin/enrollments/add/',views.admin_enroll_student,name='admin_enroll_student'),
     path('dashboard/admin/enrollments/remove/<int:enrollment_id>/', views.admin_remove_enrollment, name='admin_remove_enrollment'),
     path('dashboard/admin/students/add/', views.admin_add_student, name='admin_add_student'),
+    path('dashboard/admin/enrollment/update/<int:enrollment_id>/', views.update_enrollment, name='admin_update_enrollment'),
+
 ]

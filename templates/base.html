@@ -50,14 +50,7 @@ main::before {
 
         {% if request.user.is_authenticated %}
             <!-- Profile section -->
-            <div class="sidebar-profile">
-                {% if request.user.image %}
-                    <img src="{{ request.user.profile_picture.url }}" alt="Profile Photo" class="profile-img">
-                </div>
-                {% endif %}
-                <p class="sidebar-name">{{ request.user.get_full_name }}</p>
-                <p class="sidebar-role">{{ request.user.role|capfirst }}</p>
-            </div>
+           
 
             <!-- Nav links based on role -->
             <div class="nav-links">
@@ -67,11 +60,11 @@ main::before {
 
                 {% elif request.user.is_staff_member %}
                     <a href="{% url 'staff_dashboard' %}">🏠 Dashboard</a>
-                    <a href="{% url 'staff_student_profiles' %}">👥 Student Profiles</a>
+                    {% comment %} <a href="{% url 'staff_student_profiles' %}">👥 Student Profiles</a>
                     <a href="{% url 'staff_add_course' %}">📚 Add Course</a>
                     <a href="{% url 'staff_add_grade' %}">🎓 Add Grade</a>
                     <a href="{% url 'staff_add_assignment' %}"> Add Assignment</a>
-                    <a href="{% url 'staff_view_submissions' %}">📝 View Submissions</a>
+                    <a href="{% url 'staff_view_submissions' %}">📝 View Submissions</a> {% endcomment %}
                     {% comment %} <a href="{% url 'staff_add_announcement' %}">📢 Announcement</a> {% endcomment %}
 
                 {% elif request.user.is_admin %}

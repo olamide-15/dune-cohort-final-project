@@ -17,6 +17,5 @@ urlpatterns = [
     path('api/students/', StudentListAPIView.as_view(), name='api-student-list'),
     path('api/students/<int:pk>/', StudentDetailAPIView.as_view(), name='api-student-details'),
     path('students/create/', StudentCreateAPIView.as_view(), name='student-create'),
-    path('dashboard/admin/enrollment/update/<int:enrollment_id>/', views.update_enrollment, name='admin_update_enrollment'),
 
 ]

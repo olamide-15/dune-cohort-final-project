@@ -292,6 +292,7 @@ def admin_enroll_student(request):
 
 @role_required('admin')
 def admin_remove_enrollment(request, enrollment_id):
+    
     try:
         enrollment = Enrollment.objects.select_related(
             'student', 'course'
@@ -316,6 +317,20 @@ def admin_add_student(request):
     return render(request, 'account/admin_studentform.html', {'form': form})
 
 
+@role_required('admin')
+def update_enrollment(request, enrollment_id):
+    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
+ 
+    if request.method == 'POST':
+        form = AdminEnrollmentForm(request.POST,request.FILES, instance=enrollment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Enrollment updated.')
+            return redirect('admin_enrollments')
+    else:
+        form = AdminEnrollmentForm(instance=enrollment)
+ 
+    return render(request, 'account/admin_update_student.html', {'form': form, 'enrollment': enrollment})
 # def admin_edit_user(request, user_id):
 #     user = get_object_or_404(CustomUser, id=user_id)
 

@@ -75,12 +75,12 @@ class Course(models.Model):
 
 
 class Enrollment(models.Model):
-    LEVEL_CHOICES = [
+    LEVEL_CHOICES = (
         {'1st', '100'},
         {'1st', '200'},
         {'1st', '300'},
         {'1st', '400'},
-    ]
+    )
     student = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,

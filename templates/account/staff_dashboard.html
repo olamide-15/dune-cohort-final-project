@@ -3,33 +3,56 @@
 {% block title %} Staff Dashboard {% endblock %}
 {% block content %}
     
-
-    <h1>Welcome, {{ request.user.get_full_name }}</h1>
-    <p>Role: {{ request.user.role }}</p>
-    
-
-
-    <h1>Staff Dashboard</h1>
-    <div class="stats">
-        <div class="stat-card">
-            <h3>{{ total_students }}</h3>
-            <p>Total Students</p>
+<div class="staffdash">
+    <div class="Nav">
+        <h1>Welcome, {{ request.user.get_full_name }}</h1>
+        <p>Role: {{ request.user.role }}</p>
+        <div class="link">
+            <a href="{% url 'staff_dashboard' %}">🏠 Dashboard</a>
+            <a href="{% url 'staff_student_profiles' %}">👥 Student Profiles</a>
+            <a href="{% url 'staff_add_course' %}">📚 Add Course</a>
+            <a href="{% url 'staff_add_grade' %}">🎓 Add Grade</a>
+            <a href="{% url 'staff_add_assignment' %}"> Add Assignment</a>
+            <a href="{% url 'staff_view_submissions' %}">📝 View Submissions</a>
         </div>
-        <div class="stat-card">
-            <h3>{{ total_courses }}</h3>
-            <p>Your Courses</p>
-        </div>
+        
+
     </div>
 
-    <h2>Recent Announcements</h2>
-    {% for a in recent_announcements %}
-        <div class="card">
-            <strong>{{ a.title }}</strong>
-            <span class="badge">{{ a.audience }}</span>
-            <p>{{ a.created_at|date:"d M Y" }}</p>
+    {% comment %} <div class="mid">
+        <h1>Staff Dashboard</h1>
+        <div class="stats">
+            <div class="stat-card">
+                <h3>{{ total_students }}</h3>
+                <p>Total Students</p>
+            </div>
+            <div class="stat-card">
+                <h3>{{ total_courses }}</h3>
+                <p>Your Courses</p>
+            </div>
+
         </div>
-    {% empty %}
-        <p>No announcements yet.</p>
-    {% endfor %}
+    </div> {% endcomment %}
+    
+
+    <div class="mid">
+        <h2>Recent Announcements</h2>
+        {% for a in recent_announcements %}
+            <div class="card">
+                <strong>{{ a.title }}</strong>
+                <span class="badge">{{ a.audience }}</span>
+                <p>{{ a.created_at|date:"d M Y" }}</p>
+            </div>
+        {% empty %}
+            <p>No announcements yet.</p>
+        {% endfor %}
+    </div>
+    
+    
+       
+    
+
+</div>
+            
 
 {% endblock %}

@@ -218,38 +218,7 @@ def remove_enrollment(request, enrollment_id):
     return render(request, 'portal/confirm_delete.html', {'object': enrollment})
 
 
-@role_required('admin')
-def update_enrollment(request, enrollment_id):
-    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
-    
-    if request.method == 'POST':
-        form = EnrollmentForm(request.POST, request.FILES,instance=enrollment)  # bind POST data to existing instance
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Enrollment updated.')
-            return redirect('enrollment_list')
-    else:
-        form = EnrollmentForm(instance=enrollment)  # pre-populate form with existing data
-    
-    return render(request, 'account/admin_studentform.html', {'form': form, 'object': enrollment})
 
-
-from .forms import AdminEnrollmentForm  # make sure this is imported
-
-@role_required('admin')
-def update_enrollment(request, enrollment_id):
-    enrollment = get_object_or_404(Enrollment, id=enrollment_id)
-    
-    if request.method == 'POST':
-        form = AdminEnrollmentForm(request.POST, request.FILES,instance=enrollment)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Enrollment updated.')
-            return redirect('admin_enrollments')
-    else:
-        form = AdminEnrollmentForm(instance=enrollment)
-    
-    return render(request, 'account/admin_update_student.html', {'form': form, 'object': enrollment})
 #  API VIEWS
 
 # @api_view(['GET'])
