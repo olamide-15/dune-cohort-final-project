@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from datetime import date
+
 
 # Create your models here.
 class CustomUser(AbstractUser):
@@ -11,7 +13,14 @@ class CustomUser(AbstractUser):
         ('admin', 'Admin'),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICE)
+    date_of_birth = models.DateField(default='2000-01-01')
     phone = models.CharField(max_length=20, blank=True)
+    GENDER_CHOICES = [
+    ('male', 'Male'),
+    ('female', 'Female'),
+    ('other', 'Other'),
+    ]
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, null=True, blank=True)
     profile_picture = models.ImageField(
             upload_to='profile_pictures/',
             null=True,
@@ -38,7 +47,15 @@ class CustomUser(AbstractUser):
     @property
     def is_admin(self):
         return self.role == 'admin'
-
+    
+    @property
+    def age(self):
+        if self.date_of_birth:
+            today = date.today()
+            return today.year - self.date_of_birth.year - (
+                (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
+            )
+        return None
 
 
 class Course(models.Model):
@@ -54,7 +71,7 @@ class Course(models.Model):
     )
 
     def __str__(self):
-        return f"{self.code} — {self.title}"
+        return f"{self.code} — {self.title} -{self.files}"
 
 
 class Enrollment(models.Model):

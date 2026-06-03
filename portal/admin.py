@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Announcement, Course, Assignment,Enrollment, AssignmentSubmission, Grade
-from django.utils.html import format_html
+from django.utils.html import mark_safe
 
 
 # Register your models here.
@@ -15,20 +15,16 @@ class CustomUserAdmin(UserAdmin):
     )
 
     def thumbnail(self, obj):
-        if obj.image:
-            return format_html(
-                '<img src="{}" width="60" height="60" '
-                'style="object-fit:cover; border-radius:4px;">',
-                obj.image.url
-            )
-        return "No Image"
-    
+        if obj.profile_picture:  # was obj.image
+            return mark_safe(f'<img src="{obj.profile_picture.url}" width="50" height="50" style="border-radius:50%"/>')
+            return "No Image"
+        
     thumbnail.short_description = 'Image'
 
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['code', 'title', 'teacher']
+    list_display = ['code', 'title', 'teacher', 'files']
     search_fields = ['code', 'title']
     list_filter =['teacher']
 

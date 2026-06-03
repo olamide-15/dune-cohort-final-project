@@ -1,53 +1,44 @@
 {% extends 'base.html' %}
+
 {% block title %}
-    {% if form.instance.pk %}
-        Edit student
-    {% else %}
-        Add product
-    {% endif %}
+    {% if form.instance.pk %}Edit Student{% else %}Add Student{% endif %}
 {% endblock %}
 
 {% block content %}
-    <h2>
-        {% if form.instance.pk %}
-            Edit student
-        {% else %}
-            Add New student
-        {% endif %}
-    </h2>
-
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-      {% if product.image %}
-        <img 
-          src="{{ student.image.url }}" 
-          alt="{{ student.name }}" 
-          style="width: 20%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 20px 0;">
-        {% endif %}
-    {{form.as_p}}
-
-    <button type="submit">
-        {% if form.instance.pk %}
-            Update Product
-        {% else %}
-            Save Product
-        {% endif %}
-    </button>
-</form>
+<h2>
+    {% if form.instance.pk %}Edit Student{% else %}Add New Student{% endif %}
+</h2>
 
 {% if form.errors %}
     <div style="margin-top:20px; color: red">
-        <h4>Errors:</h4>
+        <h4>Please fix the following errors:</h4>
         <ul>
             {% for field, errors in form.errors.items %}
-                {% for errors in error %}
-                    <li><strong>{{ field}}</strong>: {{errors}}</li>
+                {% for error in errors %}
+                    <li><strong>{{ field }}</strong>: {{ error }}</li>
                 {% endfor %}
             {% endfor %}
         </ul>
     </div>
 {% endif %}
 
-    <br>
-    <a href="{% url 'admin_dashboard' %}"> Dashboard </a>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if object.profile_picture %}
+        <img 
+            src="{{ object.profile_picture.url }}" 
+            alt="{{ object.get_full_name }}"
+            style="width: 20%; max-height: 400px; object-fit: cover; border-radius: 8px; margin: 20px 0;">
+    {% endif %}
+
+    {{ form.as_p }}
+
+    <button type="submit">
+        {% if form.instance.pk %}Update Student Profile{% else %}Save Student Profile{% endif %}
+    </button>
+</form>
+
+<br>
+<a href="{% url 'admin_dashboard' %}">Dashboard</a>
 {% endblock %}

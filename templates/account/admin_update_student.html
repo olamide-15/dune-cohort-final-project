@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Student{% else %}Add Student{% endif %}
+{% endblock %}
+
+{% block content %}
+<h2>
+    {% if form.instance.pk %}Edit Student{% else %}Add New Student{% endif %}
+</h2>
+
+{% if form.errors %}
+    <div style="color: red; margin-bottom: 20px;">
+        <h4>Please fix the following errors:</h4>
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li><strong>{{ field }}</strong>: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<div>
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if object.profile_picture %}
+        <div>
+            <p>Current photo:</p>
+            <img src="{{ object.profile_picture.url }}"
+                 alt="{{ object.get_full_name }}"
+                 style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; margin-bottom: 10px;">
+        </div>
+    {% endif %}
+
+    <div>
+        <label>First Name</label>
+        {{ form.first_name }}
+        <input type="txt" placeholder="joe">
+    </div>
+    <div>
+        <label>Last Name</label>
+        {{ form.last_name }}
+        <input type="txt" placeholder="smith">
+
+
+    </div>
+    <div>
+        <label>Username</label>
+        {{ form.username }}
+        <input type="txt" placeholder="smithjoe">
+
+    </div>
+    <div>
+        <label>Email</label>
+        {{ form.email }}
+        <input type="email" placeholder="joe@gmail.com">
+
+    </div>
+    <div>
+        <label>Phone</label>
+        {{ form.phone }}
+        <input type="number" placeholder="08122112121">
+
+    </div>
+    <div>
+        <label>Class</label>
+        {{ form.class_name }}
+        <input type="txt" >
+
+    </div>
+    <div>
+        <label>Gender</label>
+        {{ form.gender }}
+        <input type="txt">
+
+    </div>
+    <div>
+        <label>Date of Birth</label>
+        {{ form.date_of_birth }}
+    </div>
+    <div>
+        {% if object.profile_picture %}
+            <div>
+                <p>Current photo:</p>
+                <img src="{{ object.profile_picture.url }}" 
+                    style="width:100px; height:100px; object-fit:cover; border-radius:50%;">
+            </div>
+        {% endif %}
+
+        <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*">
+
+        </div>
+
+    {% if form.instance.pk is None %}
+    <div>
+        <label>Password</label>
+        {{ form.password }}
+    </div>
+    {% endif %}
+
+    <br>
+    <button type="submit">
+        {% if form.instance.pk %}Update Student{% else %}Save Student{% endif %}
+    </button>
+    <a href="{% url 'admin_dashboard' %}">Cancel</a>
+</form>
+</div>
+
+
+
+{% endblock %}

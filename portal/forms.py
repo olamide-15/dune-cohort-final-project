@@ -33,7 +33,7 @@ class AssignmentForm(forms.ModelForm):
 
     def clean_due_date(self):
         due_date = self.cleaned_data.get('due_data')
-        if due_date < timezone.now().date():
+        if due_date and due_date < timezone.now().date():
             raise forms.ValidationError('Due date cannot be in the past')
         return due_date
         
@@ -68,14 +68,21 @@ class AdminAddStudentForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'username', 'email', 'phone', 'class_name', 'password']
+        fields = ['first_name', 'last_name', 'username', 'email', 'phone', 
+                  'class_name', 'password', 'gender', 'date_of_birth', 'profile_picture']  # added
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.role = 'student'                              # always set to student
+        user.role = 'student'
         user.password = make_password(self.cleaned_data['password'])
         if commit:
             user.save()
-        return user    
+        return user   
 
+
+class AdminEditStudentForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'username', 'email', 'phone',
+                  'class_name', 'gender', 'date_of_birth', 'profile_picture']
     

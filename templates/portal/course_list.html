@@ -6,8 +6,9 @@
     <div class="container">
         {% for course in courses %}
             <div class="card">
+                <p> {{ course.files }}</p>
                 <a href="{% url 'course_details' course.pk %}"> <h3>{{ course.title }}</h3></a>
-                {% comment %} <p> {{ course.teacher }}</p> {% endcomment %}
+                
 
                 <br>
                 <P>{{ course.code }}</p>
