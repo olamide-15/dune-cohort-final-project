@@ -308,6 +308,7 @@ tr:hover {
 @media(max-width= 768px){
     .maincard{
         display: flex;
+        flex-direction: column;
         width: 60%;
         justify-content: center;
     }
