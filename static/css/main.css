@@ -59,7 +59,7 @@ main{
 
 .card{
     padding: 10px;
-    /* background-color: #000; */
+    background-color: #000;
     width: 60%;
     border-radius: 20px;
     box-shadow: 0 4px 10px #000;
