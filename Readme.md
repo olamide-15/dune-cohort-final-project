@@ -1,4 +1,6 @@
 # SMARTSTUDY 
+
+url: https://smartstudy-b6go.onrender.com
 # SmartStudy 📚
 
 A Django REST Framework backend for student tracking and grade management. SmartStudy enables educators and administrators to manage students, courses, grades, and academic performance through a clean, secure API.
