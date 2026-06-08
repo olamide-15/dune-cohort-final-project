@@ -59,8 +59,9 @@ main{
 
 .card{
     padding: 10px;
-    background-color: #000;
-    width: 60%;
+    background-color: rgb(14, 12, 125);
+    color: #ddd;
+    width: 80%;
     border-radius: 20px;
     box-shadow: 0 4px 10px #000;
     z-index: 1;
