@@ -9,24 +9,24 @@
     <link rel='stylesheet' href="{% static 'css/main.css' %}">
     <style>
         main {
-    position: relative;   /* changed from absolute */
-    height: 100vh;
-    z-index: 0;
-    /* remove opacity and background-image from here */
-}
+        position: relative;   /* changed from absolute */
+        height: 100vh;
+        z-index: 0;
+        /* remove opacity and background-image from here */
+    }
 
-main::before {
-    content: "";
-    position: absolute;
-    inset: 0;             /* shorthand for top/right/bottom/left: 0 */
-    background-image: url("{% static 'image/logo.png' %}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    opacity: 0.1;         /* now ONLY the background image is transparent */
-    z-index: -1;          /* sits behind the content */
-}
+    main::before {
+        content: "";
+        position: absolute;
+        inset: 0;             /* shorthand for top/right/bottom/left: 0 */
+        background-image: url("{% static 'image/logo.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        opacity: 0.1;         /* now ONLY the background image is transparent */
+        z-index: -1;          /* sits behind the content */
+    }
     </style>
 </head>
 <body>
