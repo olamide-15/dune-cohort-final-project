@@ -78,6 +78,10 @@ main{
     justify-content: center;
 }
 
+form{
+    width: 100%;
+}
+
 .form p{
    margin-bottom: 8px;
 }
