@@ -312,7 +312,7 @@ tr:hover {
     flex-direction: column;
 }
 
-@media(max-width= 768px){
+@media(max-width:768px){
     .maincard{
         border: 2px solid red;
         display: flex;
